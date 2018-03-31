@@ -1,0 +1,24 @@
+# -*- coding:utf-8 -*-
+import redis
+
+
+# 进行项目配置
+class Config(object):
+    DEBUG = True
+    # 指定sql配置
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@192.168.182.129:3306/ihome'
+    # 指定数据库操作跟踪模式
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # 配置redis的ip,端口
+    REDIS_HOST = '127.0.0.1'
+    REDIS_PORT = 6379
+
+    # 设置签名
+    SECRET_KEY = '9NEV6yqPDkPpCOd03813wYl16DpWynvI+EFZl/ZXGyoRAkBUeDMra0GcSjwgg9Tw'
+
+    # 配置session
+    SESSION_TYPE = 'redis' # 配置session的存储方式
+    SESSION_REDIS = redis.StrictRedis(host = REDIS_HOST,port = REDIS_PORT) #指定存储session的redis
+    SESSION_USE_SIGNER = True  # 开启session签名模式,不以明文显示
+    PERMANENT_SESSION_LIFETIME = 3600 * 24  # 设置session的过期时间
