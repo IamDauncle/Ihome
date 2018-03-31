@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 
 
-from ihome import app,db
+from ihome import db
 from flask_script import Manager
 from flask_migrate import Migrate,MigrateCommand
 
+from ihome import get_app
 
 
 
-
-
-
+app = get_app('default_config')
 # 创建脚本管理器对象
 manage = Manager(app)
 # 将app与数据库迁移关联
@@ -19,15 +18,11 @@ Migrate(app,db)
 manage.add_command('db',MigrateCommand)
 
 
-
-
-
-
-
-
 @app.route("/",methods=['POST','GET'])
 def index():
+
     return 'll'
+
 
 
 
