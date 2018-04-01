@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
 from config import configs
-from ihome.api_1_0.index import aip
+
 
 from ihome.utils.common import RegexConverter
 
@@ -35,8 +35,9 @@ def get_app(config_type):
     app.url_map.converters['re'] = RegexConverter
 
     # 在app注册蓝图   蓝图注册需要放在后面
-    from ihome.api_1_0 import aip  # 为了能让redis_stoer在顶部导入,蓝图导入需要这样写
-    app.register_blueprint(aip)
+    from ihome.api_1_0 import api  # 为了能让redis_stoer在顶部导入,蓝图导入需要这样写
+    app.register_blueprint(api)
+    # 注册 静态文件蓝图
     from web_html import static_blue
     app.register_blueprint(static_blue)
 
