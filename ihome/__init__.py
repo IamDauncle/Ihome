@@ -29,6 +29,10 @@ def get_app(config_type):
     # 创建session对象
     Session(app)
 
-    # 在app注册蓝图
+    # 在app注册蓝图   蓝图注册需要放在后面
+    from ihome.api_1_0 import aip  # 为了能让redis_stoer在顶部导入,蓝图导入需要这样写
     app.register_blueprint(aip)
+
+
+
     return app
