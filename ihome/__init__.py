@@ -32,6 +32,8 @@ def get_app(config_type):
     # 在app注册蓝图   蓝图注册需要放在后面
     from ihome.api_1_0 import aip  # 为了能让redis_stoer在顶部导入,蓝图导入需要这样写
     app.register_blueprint(aip)
+    from web_html import static_blue
+    app.register_blueprint(static_blue)
 
 
 
