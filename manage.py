@@ -18,10 +18,6 @@ Migrate(app,db)
 manage.add_command('db',MigrateCommand)
 
 
-@app.route("/",methods=['POST','GET'])
-def index():
-
-    return 'll'
 
 
 

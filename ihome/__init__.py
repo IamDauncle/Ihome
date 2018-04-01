@@ -6,8 +6,7 @@ import redis
 from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
 from config import configs
-from werkzeug.routing import BaseConverter
-
+from ihome.index import aip
 
 db = SQLAlchemy() # 先创建一个db对象,供调用,再在创建app的工厂函数内部绑定app
 redis_store = None
@@ -28,4 +27,7 @@ def get_app(config_type):
     CSRFProtect(app)
     # 创建session对象
     Session(app)
+
+    # 在app注册蓝图
+    app.register_blueprint(aip)
     return app
