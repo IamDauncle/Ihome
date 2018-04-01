@@ -6,6 +6,7 @@ from flask_script import Manager
 from flask_migrate import Migrate,MigrateCommand
 
 from ihome import get_app
+from ihome import models
 
 
 

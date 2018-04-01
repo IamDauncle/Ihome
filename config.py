@@ -6,7 +6,7 @@ import redis
 class Config(object):
     DEBUG = True
     # 指定sql配置
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@192.168.182.129:3306/ihome'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/ihome'
     # 指定数据库操作跟踪模式
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
