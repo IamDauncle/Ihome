@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import redis
-from flask_wtf.csrf import CSRFProtect
+from flask import Flask
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+
 from config import configs
-from ihome.index import aip
+from ihome.api_1_0.index import aip
 
 db = SQLAlchemy() # 先创建一个db对象,供调用,再在创建app的工厂函数内部绑定app
 redis_store = None

@@ -1,10 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from flask import Blueprint
-
-# 创建蓝图
-aip = Blueprint('aip',__name__)
-
+from ihome.api_1_0 import aip
 
 
 # 使用蓝图注册路由
