@@ -9,7 +9,10 @@ from flask import Blueprint,current_app
 
 static_blue = Blueprint('static_blue',__name__)
 
-@static_blue.route('/<file_name>')
+
+
+
+@static_blue.route('/<re(".*"):file_name>')
 def get_static_html(file_name):
     # 获取静态资源的视图
     # 静态资源访问  /static/html/index.html
