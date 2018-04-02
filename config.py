@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import logging
 import redis
 
 
@@ -23,6 +24,8 @@ class Config(object):
     SESSION_USE_SIGNER = True  # 开启session签名模式,不以明文显示
     PERMANENT_SESSION_LIFETIME = 3600 * 24  # 设置session的过期时间
 
+    LOGGIONG_LEVEL = logging.DEBUG
+
 
 
 # 适应不同环境条件下的项目配置,使用工厂设计
@@ -30,7 +33,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     """创建调试环境下的配置类"""
     # 我们的爱家租房的房型，调试模式的配置和Config一致，所以pass
-    pass
+    LOGGIONG_LEVEL = logging.DEBUG
 
 
 class ProductionConfig(Config):
@@ -39,6 +42,7 @@ class ProductionConfig(Config):
     # 重写有差异性的配置
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@192.168.72.77:3306/iHome'
     DEBUG = False
+    LOGGIONG_LEVEL = logging.warn
 
 
 class UnittestConfig(Config):
@@ -46,7 +50,7 @@ class UnittestConfig(Config):
 
     # 重写有差异性的配置
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/iHome_testcast_07'
-
+    LOGGIONG_LEVEL = logging.DEBUG
 
 
 # 准备工厂设计模式的原材料

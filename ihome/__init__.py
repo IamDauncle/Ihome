@@ -18,17 +18,26 @@ from logging.handlers import RotatingFileHandler
 db = SQLAlchemy() # 先创建一个db对象,供调用,再在创建app的工厂函数内部绑定app
 redis_store = None
 
+
+
+
+
+def setuploggin(loggin_leve):
 #-- ----固定添加日志------
-# 设置日志的记录等级
-logging.basicConfig(level=logging.DEBUG)  # 调试debug级
-# 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
-file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024*1024*100, backupCount=10)
-# 创建日志记录的格式                 日志等级    输入日志信息的文件名 行数    日志信息
-formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
-# 为刚创建的日志记录器设置日志记录格式
-file_log_handler.setFormatter(formatter)
-# 为全局的日志工具对象（flask app使用的）添加日志记录器
-logging.getLogger().addHandler(file_log_handler)
+    # 设置日志的记录等级
+    logging.basicConfig(level=loggin_leve)  # 调试debug级
+    # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
+    file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024*1024*100, backupCount=10)
+    # 创建日志记录的格式                 日志等级    输入日志信息的文件名 行数    日志信息
+    formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
+    # 为刚创建的日志记录器设置日志记录格式
+    file_log_handler.setFormatter(formatter)
+    # 为全局的日志工具对象（flask app使用的）添加日志记录器
+    logging.getLogger().addHandler(file_log_handler)
+
+
+
+
 
 
 
@@ -40,6 +49,9 @@ def get_app(config_type):
 
     # 创建app
     app = Flask(__name__)
+
+    setuploggin(configs[config_type].LOGGIONG_LEVEL)
+
     # 创建配置加载
     app.config.from_object(configs[config_type])
     # 创建连接sql的对象
