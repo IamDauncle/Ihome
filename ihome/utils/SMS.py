@@ -6,7 +6,6 @@
 
 
 from ihome.libs.ytx_SDK.CCPRestSDK import REST
-
 import ConfigParser
 
 #Ö÷ÕÊºÅ
@@ -74,6 +73,9 @@ class CCP(object):
             return 1
         else:
             return 0
+
+
+
 
 
 
