@@ -39,12 +39,6 @@ def setuploggin(loggin_leve):
 
 
 
-
-
-
-
-
-
 def get_app(config_type):
 
     # 创建app
@@ -61,7 +55,7 @@ def get_app(config_type):
     global redis_store
     redis_store = redis.StrictRedis(host=configs[config_type].REDIS_HOST,port=configs[config_type].REDIS_PORT)
     # 创建csrf对象
-    CSRFProtect(app)
+    # CSRFProtect(app)
     # 创建session对象
     Session(app)
     # 注册自定义路由转换器,添加至框架的路由转换器字典集

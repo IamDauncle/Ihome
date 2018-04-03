@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import re
 
-from ihome.constants import SMS_CODE_REDIS_EXPIRES
+from ihome import constants
 from . import api
 from flask import request,current_app,jsonify,make_response
 from ihome.utils.captcha.captcha import captcha
@@ -46,7 +46,7 @@ def get_image_code():
 
 
 # 定义发送短信验证码的视图
-@api.route('sms_code')
+@api.route('/sms_code',methods=['POST'])
 def send_sms_code():
     # 1.获取参数---手机号码,uuid,输入的图片验证码
     # 2.判断数据完整性
@@ -60,7 +60,7 @@ def send_sms_code():
     json_dict = request.json # 直接获取json数据的字典
     mobile = json_dict.get('mobile')
     uuid = json_dict.get('uuid')
-    client_image_code = json_dict.get('client_image_code')
+    client_image_code = json_dict.get('imagecode')
 
     # 2.判断数据的完整性  数据的有效性校验
     if not all([mobile,uuid,client_image_code]):
@@ -77,23 +77,29 @@ def send_sms_code():
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET. NODATA , errmsg=u'图片验证码本地获取失败')
+
+    if not server_image_code:
+        return jsonify(errno=RET.NODATA, errmsg='验证码不存在')
+
     # 4.判断验证码是否一致
-    if server_image_code != client_image_code:
+    if server_image_code != client_image_code.lower():
         return jsonify(errno=RET. DATAERR , errmsg=u'验证码不正确')
 
     # 生成短信验证码
     sms_code = '%06s' %random.randint(0,999999)
 
     # 5.发送短信到用户
-    if CCP().send_template_sms(mobile,[sms_code,SMS_CODE_REDIS_EXPIRES/5],'1') != 1:
+    time = str(constants.SMS_CODE_REDIS_EXPIRES/60)
+    res = CCP().send_template_sms(mobile,[sms_code,time],'1')
+    if res != 1:
         return jsonify(errno=RET.THIRDERR  , errmsg=u'短信发送失败')
 
 
     # 6.存储短信验证码到redis
 
-    sms_sky = 'sms:%s' %sms_code
+    sms_sky = 'sms:%s' %mobile
     try:
-        redis_store.set(sms_sky,sms_code,SMS_CODE_REDIS_EXPIRES)
+        redis_store.set(sms_sky,sms_code,constants.SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET. DBERR , errmsg=u'短信验证码存储失败')

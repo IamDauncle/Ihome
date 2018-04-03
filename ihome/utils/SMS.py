@@ -2,8 +2,8 @@
 
 #coding=utf-8
 
-#-*- coding: UTF-8 -*-  
-
+#-*- coding: UTF-8 -*-
+from flask import current_app
 
 from ihome.libs.ytx_SDK.CCPRestSDK import REST
 import ConfigParser
@@ -68,8 +68,12 @@ class CCP(object):
         result = self.rest.sendTemplateSMS(to, datas, tempId)
 
         # 对结果进行判断
+        current_app.logger.debug(result)
 
-        if result == '000000':
+    # {'templateSMS': {'smsMessageSid': '8c881d5eefc64947a8418cff2044cd9e', 'dateCreated': '20180403121400'},
+    #  'statusCode': '000000'}
+
+        if result['statusCode'] == '000000':
             return 1
         else:
             return 0
