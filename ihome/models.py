@@ -30,6 +30,39 @@ class User(BaseModel, db.Model):
     orders = db.relationship("Order", backref="user")  # 用户下的订单
 
 
+
+
+
+
+    @property
+    def password(self):  # 表示的是get
+        raise AttributeError('can not read')
+
+    @password.setter
+    def password(self, value):
+        # value就是需要加密的明文。
+        self.password_hash = generate_password_hash(value)
+
+
+    def check_passworf(self, password):
+        """校验密码:如果匹配成功返回True.反之，返回False"""
+        return check_password_hash(self.password_hash, password)
+
+
+    # @property
+    # def password(self):
+    #     raise AttributeError('can not read')
+    #
+    # @password.setter
+    # def password(self, value):
+    #     # value 是外界传入的密码的明文数据
+    #     self.password_hash = generate_password_hash(value)
+
+
+
+
+
+
 class Area(BaseModel, db.Model):
     """城区"""
 

@@ -48,6 +48,21 @@ class CCP(object):
 
         return cls._instance
 
+#
+# 单例的实现.定义一个类的私有属性赋值为None,该属性用于作为接受返回的事例对象.
+#     class CCP(object)
+    # _instance = None
+    # def __new__(cls, *args, **kwargs):
+    #     if not cls._instance:
+    #         cls._instance = super(CCP, cls).__new__(cls, *args, **kwargs)
+    #      或 cls._instance = object.__new__(cls, *args, **kwargs)
+    #     return cls._instance
+
+
+
+
+
+
 
     # def __new__(cls, *args, **kwargs):
     #     if not hasattr(cls, '_instance'):

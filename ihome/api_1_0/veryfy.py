@@ -81,18 +81,19 @@ def send_sms_code():
     if not server_image_code:
         return jsonify(errno=RET.NODATA, errmsg='验证码不存在')
 
+
     # 4.判断验证码是否一致
-    if server_image_code != client_image_code.lower():
+    if server_image_code.lower() != client_image_code.lower():
         return jsonify(errno=RET. DATAERR , errmsg=u'验证码不正确')
 
     # 生成短信验证码
     sms_code = '%06s' %random.randint(0,999999)
-
-    # 5.发送短信到用户
-    time = str(constants.SMS_CODE_REDIS_EXPIRES/60)
-    res = CCP().send_template_sms(mobile,[sms_code,time],'1')
-    if res != 1:
-        return jsonify(errno=RET.THIRDERR  , errmsg=u'短信发送失败')
+    current_app.logger.error(sms_code)
+    # # 5.发送短信到用户
+    # time = str(constants.SMS_CODE_REDIS_EXPIRES/60)
+    # res = CCP().send_template_sms(mobile,[sms_code,time],'1')
+    # if res != 1:
+    #     return jsonify(errno=RET.THIRDERR  , errmsg=u'短信发送失败')
 
 
     # 6.存储短信验证码到redis
