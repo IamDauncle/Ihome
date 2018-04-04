@@ -78,6 +78,12 @@ def register():
         current_app.logger.error(e)
         db.session.rollback()
         return jsonify(errno=RET. DBERR , errmsg=u'用户创建失败')
+    try:
+        session['user_id'] = user.id
+        session[mobile] = user.mobile
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DATAERR, errmsg=u'登陆状态保存失败')
 
 
     return jsonify(errno=RET.OK , errmsg=u'用户创建成功')
