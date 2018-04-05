@@ -1,18 +1,55 @@
 # -*- coding:utf-8 -*-
 from ihome import db
 from ihome.utils.response_code import RET
-from . import api
+from ihome.api_1_0 import api
 from ihome.utils.common import login_required
-from flask import request,g,current_app,jsonify
+from flask import request,g,current_app,jsonify,session
 from ihome.utils.image_storage import upload_image
 from ihome.models import User
-from ihome.constants import QINIU_DOMIN_PREFIX
+from ihome import constants
+
+
+
+# 展示个人信息接口 用于修改页和个人主页
+@api.route('/users')
+# @login_required
+def show_user_info():
+    # 显示客人信息接口
+    # 1.判断登陆
+    # 2.获取用户信息
+    # 3.查询用户显示信息
+    # 4.响应展示信息
+
+    # 2.获取用户信息
+    # user_id = g.user_id
+    user_id = session['user_id']
+    try:
+        user = User.query.get(user_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET. DBERR , errmsg=u'数据查询失败')
+    if not user:
+        return jsonify(errno=RET. USERERR , errmsg=u'用户名或密码不存在')
+
+        # 3.查询用户显示信息
+    # response_data = {
+    #     'avatar_url': constants.QINIU_DOMIN_PREFIX + (self.avatar_url if self.avatar_url else ""),
+    #     'name': self.name,
+    #     'mobile': self.mobile,
+    #     'user_id': self.id
+    # }
+
+    # 调用封装在models的用户信息数据函数
+    context = user.to_dict()
+
+    return jsonify(errno=RET. OK , errmsg=u'数据查询成功',data=context)
 
 
 
 
+# 定义上传图片接口
 @api.route('/users/avatar',methods=['POST'])
-@login_required
+# @login_required
 def upload_avatar():
     # 用户上传头像的接口
 # # 1.判断登陆状态
@@ -29,7 +66,8 @@ def upload_avatar():
         current_app.logger.error(e)
         return jsonify(errno=RET.THIRDERR, errmsg='上传头像失败')
 # # 4.将返回的存储图片key存储 avatar_url
-    user_id = g.user_id
+    user_id = session['user_id']
+    # user_id = g.user_id
     try:
         user = User.query.get(user_id)
     except Exception as e :
@@ -45,8 +83,46 @@ def upload_avatar():
         db.session.roolback()
         return jsonify(errno=RET. DBERR , errmsg=u'头像图片保存失败')
 # # 5.拼接浏览器渲染图片路径
-    avatar_image_user = QINIU_DOMIN_PREFIX + image_key
+    avatar_image_user = constants.QINIU_DOMIN_PREFIX + image_key
 
 
 # # 6.返回json
     return jsonify(errno=RET. OK , errmsg=u'头像上传成功',data = avatar_image_user)
+
+
+
+
+# 定义修改名字接口
+@api.route('/users/name', methods=['PUT'])
+def change_name():
+    # -----修改名字接口-----
+    # 1.判断登陆
+    # 2.获取参数
+    json_dict = request.json
+    name = json_dict.get('name')
+# 3.校验参数
+    if not all([name]):
+        return jsonify(errno=RET. PARAMERR , errmsg=u'数据不完整')
+    # user_id = g.user_id
+    user_id = session['user_id']
+    try:
+        user = User.query.get(user_id)
+    except Exception as e:
+        return jsonify(errno=RET.DBERR, errmsg=u'获取数据失败')
+    if not user:
+        return jsonify(errno=RET.USERERR  , errmsg=u'用户不存在或密码不对')
+
+# 4.存储数据
+    user.name = name
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET. DBERR , errmsg=u'数据保存失败')
+
+# 5.返回响应json
+    return jsonify(errno=RET. OK , errmsg=u'名称修改成功')
+
+
+

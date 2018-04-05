@@ -9,7 +9,7 @@ from ihome.models import User
 from ihome.utils.common import login_required
 
 
-
+# 定义注册视图
 @api.route('/users',methods=['POST'])
 def register():
     # 注册视图
@@ -80,7 +80,7 @@ def register():
         return jsonify(errno=RET. DBERR , errmsg=u'用户创建失败')
     try:
         session['user_id'] = user.id
-        session[mobile] = user.mobile
+        session['mobile'] = user.mobile
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DATAERR, errmsg=u'登陆状态保存失败')
@@ -90,6 +90,8 @@ def register():
 
 
 
+
+# 定义失焦校验用户视图
 @api.route('/users_info')
 def chek_user():
     mobile = request.args.get('mobile')
@@ -105,6 +107,8 @@ def chek_user():
 
 
 
+
+# 定义登陆视图
 @api.route('/sessions',methods = ['POST'])
 def logint():
     #    """实现用户的登陆接口---设置用户session"""
@@ -134,7 +138,7 @@ def logint():
     # # 4.设置session
     try:
         session['user_id'] = user.id
-        session[mobile] = user.mobile
+        session['mobile'] = user.mobile
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET. DATAERR , errmsg=u'session登陆状态保存失败')
@@ -142,3 +146,30 @@ def logint():
     # g.user_id = session['user_id']
     return jsonify(errno=RET.OK  , errmsg=u'登陆成功')
 
+
+
+
+# 定义退出登陆视图
+@api.route('/sessions',methods=['DELETE'])
+# @login_required
+def logout():
+    # 退出登陆
+    try:
+        session.pop('user_id')
+        session.pop('mobile')
+    except Exception as e:
+        return jsonify(errno=RET. UNKOWNERR , errmsg=u'退出登陆失败')
+    return jsonify(errno=RET.OK  , errmsg=u'退出登陆')
+
+#
+# @api.route('/sessions', methods=['DELETE'])
+# @login_required
+# def logout():
+#     """提供退出登录"""
+#
+#     # 1.清理session数据
+#     session.pop('user_id')
+#     # session.pop('name')
+#     session.pop('mobile')
+#
+#     return jsonify(errno=RET.OK, errmsg='退出登录成功')

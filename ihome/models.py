@@ -49,6 +49,19 @@ class User(BaseModel, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+
+    # 把需要响应的数据内容封装在models，使用时直接调用
+    def to_dict(self):
+        """封装要响应的字典"""
+        response_data = {
+            'avatar_url': constants.QINIU_DOMIN_PREFIX + (self.avatar_url if self.avatar_url else ""),
+            'name': self.name,
+            'mobile': self.mobile,
+            'user_id': self.id
+        }
+        return response_data
+
+
     # @property
     # def password(self):
     #     raise AttributeError('can not read')
