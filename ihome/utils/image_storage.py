@@ -23,4 +23,7 @@ def upload_image(image_data):
     else:
         raise Exception('图片上传失败')
 
-
+# if __name__ == '__main__':
+#     with open('/home/python/Flast/Ihome/ihome/static/images/home02.jpg','rb') as f:
+#         key = upload_image(f.read())
+#         print (key)

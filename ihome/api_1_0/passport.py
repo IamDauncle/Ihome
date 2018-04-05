@@ -139,6 +139,6 @@ def logint():
         current_app.logger.error(e)
         return jsonify(errno=RET. DATAERR , errmsg=u'session登陆状态保存失败')
     # # 5.返回结果
-
+    # g.user_id = session['user_id']
     return jsonify(errno=RET.OK  , errmsg=u'登陆成功')
 
