@@ -24,15 +24,7 @@ $(document).ready(function(){
             alert(response.errmsg)
         }
 
-
-
-
-
-    })
-
-
-
-
+    });
 
 
     // TODO: 管理实名信息表单的提交行为

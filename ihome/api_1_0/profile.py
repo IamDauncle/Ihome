@@ -14,7 +14,7 @@ from ihome import constants
 
 # 展示个人信息接口 用于修改页和个人主页
 @api.route('/users')
-# @login_required
+@login_required
 def show_user_info():
     # 显示客人信息接口
     # 1.判断登陆
@@ -51,7 +51,7 @@ def show_user_info():
 
 # 定义上传图片接口
 @api.route('/users/avatar',methods=['POST'])
-# @login_required
+@login_required
 def upload_avatar():
     # 用户上传头像的接口
 # # 1.判断登陆状态
@@ -96,6 +96,7 @@ def upload_avatar():
 
 # 定义修改名字接口
 @api.route('/users/name', methods=['PUT'])
+@login_required
 def change_name():
     # -----修改名字接口-----
     # 1.判断登陆
@@ -128,8 +129,9 @@ def change_name():
 
 
 
-# 定义实名认证接口
+# 定义提交实名认证接口
 @api.route('/users/auth',methods=['POST'])
+@login_required
 def set_user_auth():
     # 1.判断登陆
     # 2.接受参数   --id_card  --real_name
@@ -178,8 +180,7 @@ def set_user_auth():
 
 
 
-# 显示实名认证
-
+# 显示实名认证接口
 @api.route('/users/auth')
 @login_required
 def show_user_auth():

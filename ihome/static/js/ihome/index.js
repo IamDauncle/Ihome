@@ -59,6 +59,27 @@ function goToSearchPage(th) {
 
 $(document).ready(function(){
     // TODO: 检查用户的登录状态
+
+    $.get('/api/1.0/index/sessions',function (response) {
+
+        if(response.errno == '0'){
+            $('.register-login').hide();
+            $('.user-info').show();
+            $('.user-name').html(response.data.user_name)
+
+        }else {
+            alert(response.errmsg)
+        }
+
+
+    })
+
+
+
+
+
+
+
     $(".top-bar>.register-login").show();
     // TODO: 获取幻灯片要展示的房屋基本信息
 

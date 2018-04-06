@@ -80,7 +80,10 @@ def register():
         return jsonify(errno=RET. DBERR , errmsg=u'用户创建失败')
     try:
         session['user_id'] = user.id
-        session['mobile'] = user.mobile
+        session['user_mobile'] = user.mobile
+        session['user_name'] = user.name
+
+
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DATAERR, errmsg=u'登陆状态保存失败')
@@ -122,7 +125,7 @@ def logint():
         return jsonify(errno=RET.PARAMERR  , errmsg=u'参数不完整')
         # 判断手机号码
     if not re.match(r'^1[345678][0-9]{9}$', mobile):
-        return jsonify(errno=RET.PARAMERR, errmsg=u'缺少参数')
+        return jsonify(errno=RET.PARAMERR, errmsg=u'信息格式不正确')
     # # 3.获取用户信息--验证密码
     try:
         user = User.query.filter(User.mobile==mobile).first()
@@ -138,7 +141,8 @@ def logint():
     # # 4.设置session
     try:
         session['user_id'] = user.id
-        session['mobile'] = user.mobile
+        session['user_mobile'] = user.mobile
+        session['user_name'] = user.name
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET. DATAERR , errmsg=u'session登陆状态保存失败')
@@ -151,12 +155,13 @@ def logint():
 
 # 定义退出登陆视图
 @api.route('/sessions',methods=['DELETE'])
-# @login_required
+@login_required
 def logout():
     # 退出登陆
     try:
         session.pop('user_id')
-        session.pop('mobile')
+        session.pop('user_mobile')
+        session.pop('user_name')
     except Exception as e:
         return jsonify(errno=RET. UNKOWNERR , errmsg=u'退出登陆失败')
     return jsonify(errno=RET.OK  , errmsg=u'退出登陆')
@@ -173,3 +178,24 @@ def logout():
 #     session.pop('mobile')
 #
 #     return jsonify(errno=RET.OK, errmsg='退出登录成功')
+
+
+
+
+# 定义前端确认登陆视图
+@api.route('/index/sessions')
+def index_login():
+
+    user_id = session.get('user_id')
+    user_name = session.get('user_name')
+    user_mobile = session.get('user_mobile')
+
+
+
+    if not all([user_id,user_name,user_mobile]):
+        return jsonify(errno=RET. SESSIONERR , errmsg=u'未登陆')
+
+    return jsonify(errno=RET. OK , errmsg=u'OK',data = {'user_name':user_name})
+
+
+
