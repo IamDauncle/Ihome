@@ -16,7 +16,9 @@ $(document).ready(function () {
 
     $.get('/api/1.0/users',function (response) {
         if (response.errno == '0'){
+            if(!response.data.avatar_url){
             $('#user-avatar').attr('src',response.data.avatar_url);
+            }
             $('#user-name').val(response.data.name)
 
         }else if (response.errno == '4101') {
