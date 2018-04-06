@@ -33,7 +33,7 @@ def login_required(func,*args,**kwargs):
             return jsonify(errno=RET. SESSIONERR, errmsg=u'用户未登陆')
         else:
             g.user_id = user_id
-            return jsonify(errno=RET. OK , errmsg=u'用户已登陆')
+            return func(*args,**kwargs)
 
     return wrapper
 

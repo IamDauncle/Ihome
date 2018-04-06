@@ -61,6 +61,19 @@ class User(BaseModel, db.Model):
         }
         return response_data
 
+    # 把需要响应的数据内容封装在models，使用时直接调用
+    def arth_to_dict(self):
+        """封装要响应的字典"""
+        response_data = {
+            'real_name':self.real_name,
+            'id_card':self.id_card
+        }
+        return response_data
+
+
+
+
+
 
     # @property
     # def password(self):

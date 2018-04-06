@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import re
+
 from ihome import db
 from ihome.utils.response_code import RET
 from ihome.api_1_0 import api
@@ -126,3 +128,74 @@ def change_name():
 
 
 
+# 定义实名认证接口
+@api.route('/users/auth',methods=['POST'])
+def set_user_auth():
+    # 1.判断登陆
+    # 2.接受参数   --id_card  --real_name
+    # 3.参数校验   --是否完整  --身份证的校验  --姓名校验
+    # 4.查询用户信息
+    # 5.添加认证信息到属性
+    # 6.返回响应
+
+
+# 2.接受参数   --id_card  --real_name
+    json_dict = request.json
+    id_card = json_dict.get('id_card')
+    real_name = json_dict.get('real_name')
+
+    # 3.参数校验   --是否完整  --
+    if not all([id_card,real_name]):
+        return jsonify(errno=RET.PARAMERR  , errmsg=u'数据不完整')
+    # 判断身份证
+    # red = r'^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$'
+    # if not re.match(red,id_card):
+    #     return jsonify(errno=RET.ROLEERR  , errmsg=u'身份证格式有误')
+    # # 姓名校验
+
+    # 4.查询用户信息
+    user_id = session['user_id']
+    try:
+        user = User.query.get(user_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET. DBERR , errmsg=u'数据查询失败')
+    if not user:
+        return jsonify(errno=RET. USERERR , errmsg=u'用户名或密码不正确')
+
+
+    user.id_card = id_card
+    user.real_name = real_name
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET. DBERR , errmsg=u'数据存储失败')
+    return jsonify(errno=RET. OK , errmsg=u'实名认证成功')
+
+
+
+
+
+# 显示实名认证
+
+@api.route('/users/auth')
+@login_required
+def show_user_auth():
+    # 1.判断登陆
+
+# 4.查询用户信息 判断是否存在用户
+    user_id = g.user_id
+    try:
+        user = User.query.get(user_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR  , errmsg=u'用户数据获取失败')
+
+    if not user:
+        return jsonify(errno=RET.USERERR  , errmsg=u'用户名不存在或密码错误')
+# 5.查询显示数据 --real_name --id_card
+    context = user.arth_to_dict()
+# 6.返回响应
+    return jsonify(errno=RET.OK  , errmsg=u'实名认证信息获取成功',data = {'user_arth':context})
