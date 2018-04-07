@@ -18,7 +18,9 @@ $(document).ready(function(){
     $.get('/api/1.0/users/auth',function (response) {
         if(response.errno == '0'){
             $('#real-name').val(response.data.user_arth.real_name);
-            $('#id-card').val(response.data.user_arth.id_card)
+            $('#id-card').val(response.data.user_arth.id_card);
+             $('#real-name').attr('disabled', true);
+            $('#id-card').attr('disabled', true);
 
         }else {
             alert(response.errmsg)

@@ -124,6 +124,12 @@ def change_name():
         db.session.rollback()
         return jsonify(errno=RET. DBERR , errmsg=u'数据保存失败')
 
+    try:
+        session['user_name'] = name
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET. UNKOWNERR , errmsg=u'session修改失败')
+
 # 5.返回响应json
     return jsonify(errno=RET. OK , errmsg=u'名称修改成功')
 
