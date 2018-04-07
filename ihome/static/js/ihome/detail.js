@@ -22,7 +22,10 @@ $(document).ready(function(){
     $.get('/api/1.0/houses/'+houseId,function (response) {
         if(response.errno == '0'){
 
-            var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls});
+            // var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls});
+            var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls, 'price':response.data.house_data_dict.price});
+            alert(response.data.house_data_dict.img_urls);
+
 
             $('.swiper-container').html(html_images);
 

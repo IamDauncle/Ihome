@@ -168,9 +168,17 @@ def set_house_image():
     if not house:
         return jsonify(errno=RET. NODATA , errmsg=u'房屋信息不存在')
 
+
+    # 将图片存入HouseImage
+    house_image = HouseImage()
+    house_image.house_id = house_id
+    house_image.url = house_image_key
+
+    # 设置首页显示的房源默认图片
     house.index_image_url = house_image_key
 
     try:
+        db.session.add(house_image)
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
@@ -247,6 +255,10 @@ def get_house_info(house_id):
 
     # 房源详细信息
     house_data_dict = house.to_full_dict()
+
+    current_app.logger.debug(house_data_dict['img_urls'])
+    current_app.logger.debug(house.images)
+
 
     return jsonify(errno=RET. OK , errmsg=u'ok',data = {'house_data_dict':house_data_dict})
 
