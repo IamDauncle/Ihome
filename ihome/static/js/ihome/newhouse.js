@@ -3,6 +3,19 @@ function getCookie(name) {
     return r ? r[1] : undefined;
 }
 
+
+function showSuccessMsg() {
+    $('.popup_con').fadeIn('fast', function() {
+        setTimeout(function(){
+            $('.popup_con').fadeOut('fast',function(){});
+        },1000)
+    });
+}
+
+
+
+
+
 $(document).ready(function(){
     // $('.popup_con').fadeIn('fast');
     // $('.popup_con').fadeOut('fast');
@@ -102,6 +115,7 @@ $(document).ready(function(){
             success:function (response) {
                 if (response.errno == '0') {
                     $('.house-image-cons').append('<img src="'+response.data.house_image_url+'">');
+                    showSuccessMsg()
                 } else if (response.errno == '4101')  {
                     location.href = '/';
                 } else {

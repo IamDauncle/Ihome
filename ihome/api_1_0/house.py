@@ -9,7 +9,7 @@ from ihome.utils.response_code import RET
 from ihome import redis_store,db
 from ihome import constants
 from ihome.utils.common import login_required
-from ihome.models import House,Facility
+from ihome.models import House,Facility,HouseImage
 from ihome.utils.image_storage import upload_image
 
 
@@ -131,7 +131,7 @@ def pub_house():
 
 
 
-
+# 定义上传房屋图片接口
 @api.route('/houses/image',methods = ['POST'])
 @login_required
 def set_house_image():
@@ -186,11 +186,41 @@ def set_house_image():
 
 
 
+# 定义首页推荐房屋
+@api.route('/houses/index')
+def get_index_house():
+    '''
+    该接口是给首页显示最新房源
+    从数据库查询出时间最新的五组数据，使用order_by()排序，desc（）选择倒序，limit（）获取数据条数
+    由于查询获取的数据是query数据对象，需要转成可以传递的json格式，字典或者列表获
+    遍历查询得到的数据聚合对象，去除每个对象的数据信息，添加至列表
+    接口需要的模型数据都封装在models，需要时调用获取
+    '''
+
+    #1. 获取房屋照片最新5张数据
+    try:
+        houses =House.query.order_by(House.create_time.desc()).limit(constants.HOME_PAGE_MAX_HOUSES)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.  DBERR, errmsg=u'获取数据失败')
+    if not houses:
+        return jsonify(errno=RET.NODATA  , errmsg=u'数据不存在')
+
+    # 2.构造数据
+    # images_list = []
+    # for house in houses:
+    #     images_list.append(house.to_basic_dict())
+
+
+    houses_list = [house.to_basic_dict() for house in houses]
+    # 3.返回响应
+    return jsonify(errno=RET. OK , errmsg=u'OK',data = {'houses_list':houses_list})
 
 
 
 
 
-
+@api.route('houses/<int:house_id>')
+def get_house_info(house_id):
 
 
