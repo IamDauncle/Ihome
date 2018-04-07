@@ -241,7 +241,7 @@ def get_house_info(house_id):
     '''
     该接口用于显示房源的详细信息 分两部分 house-detail-tmpl  house-image-tmpl
     获取该房屋的信息---to_full_dict()
-    构造响应数据
+    构造响应数据----需要传入登陆用户的id用于前端获取判断是否是房屋房主
     放回响应
     '''
 
@@ -277,3 +277,10 @@ def get_house_info(house_id):
 
 
 
+
+
+
+
+# # 定义获取房屋搜索显示接口
+# @api.route('/houses/search')
+# def get_houses_search():
