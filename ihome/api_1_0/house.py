@@ -219,8 +219,36 @@ def get_index_house():
 
 
 
-
-@api.route('houses/<int:house_id>')
+# 定义房源详细信息接口
+@api.route('/houses/<int:house_id>')
 def get_house_info(house_id):
+    '''
+    该接口用于显示房源的详细信息 分两部分 house-detail-tmpl  house-image-tmpl
+    获取该房屋的信息---to_full_dict()
+    构造响应数据
+    放回响应
+    '''
+
+    #1.获取参数
+    # 2.校验参数---路由转换器已经匹配int了，
+    # 3.获取数据
+    #4.构造响应json
+    # 5.返回响应
+
+   # 3.获取数据
+    try:
+        house = House.query.get(house_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET. DBERR , errmsg=u'房源数据获取失败')
+
+    if not house_id:
+        return jsonify(errno=RET.NODATA  , errmsg=u'数据不存在')
+
+    # 房源详细信息
+    house_data_dict = house.to_full_dict()
+
+    return jsonify(errno=RET. OK , errmsg=u'ok',data = {'house_data_dict':house_data_dict})
+
 
 

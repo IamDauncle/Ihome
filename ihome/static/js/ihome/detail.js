@@ -19,6 +19,28 @@ $(document).ready(function(){
 
     // TODO: 获取该房屋的详细信息
 
+    $.get('/api/1.0/houses/'+houseId,function (response) {
+        if(response.errno == '0'){
+
+            var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls});
+
+            $('.swiper-container').html(html_images);
+
+            var html_detail = template('house-detail-tmpl',{'house':response.data.house_data_dict});
+
+            $('.detail-con').html(html_detail);
+
+        } else {
+            alert(response.errmsg)
+        }
+    });
+
+
+
+
+
+
+
     // TODO: 数据加载完毕后,需要设置幻灯片对象，开启幻灯片滚动
     var mySwiper = new Swiper ('.swiper-container', {
         loop: true,
@@ -27,4 +49,4 @@ $(document).ready(function(){
         pagination: '.swiper-pagination',
         paginationType: 'fraction'
     });
-})
+});

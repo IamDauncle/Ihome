@@ -180,13 +180,13 @@ class House(BaseModel, db.Model):
         img_urls = []
         for image in self.images:
             img_urls.append(constants.QINIU_DOMIN_PREFIX + image.url)
-        house_dict["img_urls"] = img_urls
+        house_dict["img_urls"] = img_urls # 房屋的展示照片列表
 
         # 房屋设施
         facilities = []
         for facility in self.facilities:
             facilities.append(facility.id)
-        house_dict["facilities"] = facilities
+        house_dict["facilities"] = facilities  # 房屋的设施列表
 
         # 评论信息
         comments = []
@@ -199,7 +199,7 @@ class House(BaseModel, db.Model):
                 "ctime": order.update_time.strftime("%Y-%m-%d %H:%M:%S")  # 评价的时间
             }
             comments.append(comment)
-        house_dict["comments"] = comments
+        house_dict["comments"] = comments   # 房屋的评论列表
         return house_dict
 
 
