@@ -24,14 +24,18 @@ $(document).ready(function(){
 
             // var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls});
             var html_images = template('house-image-tmpl',{'img_urls':response.data.house_data_dict.img_urls, 'price':response.data.house_data_dict.price});
-            alert(response.data.house_data_dict.img_urls);
-
-
             $('.swiper-container').html(html_images);
-
             var html_detail = template('house-detail-tmpl',{'house':response.data.house_data_dict});
-
             $('.detail-con').html(html_detail);
+            if(response.data.login_user_id != response.data.house_data_dict.user_id){
+                //如果登陆id不是本房源用户id,显示预定按钮,填充点击跳转路径
+                $('.book-house').show();
+                $('.book-house').attr('href', 'booking.html?hid=' + response.data.house.hid);
+
+            }else {
+                $('.book-house').hide()
+            }
+
 
         } else {
             alert(response.errmsg)

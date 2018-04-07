@@ -4,7 +4,7 @@
 
 from . import api
 from ihome.models import Area
-from flask import request,current_app,jsonify,g
+from flask import request,current_app,jsonify,g,session
 from ihome.utils.response_code import RET
 from ihome import redis_store,db
 from ihome import constants
@@ -111,8 +111,16 @@ def pub_house():
     house.deposit = deposit
     house.min_days = min_days
     house.max_days = max_days
- # 查询出被选中的设施模型对象
-    house.facilities = Facility.query.filter(Facility.id.in_(facilities)).all()
+
+ # 如果发布时，有选择设备，就把选择的设备添加到house.facilities 属性保存
+    if facilities:
+        try:
+            house.facilities = Facility.query.filter(Facility.id.in_(facilities)).all()
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET. DBERR , errmsg=u'数据查询失败')
+
+
 
     # 4.保存到数据库
     try:
@@ -259,8 +267,13 @@ def get_house_info(house_id):
     current_app.logger.debug(house_data_dict['img_urls'])
     current_app.logger.debug(house.images)
 
+    # 获取登陆用户的id 判断是否是登陆用户  不是登陆用户返回-1
 
-    return jsonify(errno=RET. OK , errmsg=u'ok',data = {'house_data_dict':house_data_dict})
+    login_user_id = session.get('user_id',-1)
+
+
+
+    return jsonify(errno=RET. OK , errmsg=u'ok',data = {'house_data_dict':house_data_dict,'login_user_id':login_user_id})
 
 
 
