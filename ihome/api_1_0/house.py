@@ -305,8 +305,8 @@ def get_houses_search():
     end_date = request.args.get('ed') # 离开时间
     p = request.args.get('p') # 分页页码
 
-
-
+    if not p:
+        p = 1
     # 2.参数校验
     try:
         p = int(p)
@@ -362,10 +362,11 @@ def get_houses_search():
 
         # 将进行排序的结果进行分页
 
-        paginates = house_query.paginate(p,constants.HOME_PAGE_MAX_HOUSES,False)
+
+        paginates = house_query.paginate(p,constants.HOUSE_LIST_PAGE_CAPACITY,False)
 
         # 获取分页总数
-        pages = paginates.page
+        pages = paginates.pages
 
         # 获取当前分页数据
         houses = paginates.items

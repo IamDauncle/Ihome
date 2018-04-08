@@ -45,12 +45,31 @@ function updateHouseData(action) {
         p:next_page
     };
     // TODO: 获取房屋列表信息
+    // 关键属性--house_data_querying  判断是否下拉获取资源,防止暴力刷资源
+    //--cur_page --total_page --next_page
+    // 判断当前页与总页数的关系.如果小于总页数, 下一页码数加1 .就是在获得下一页资源后,现在的当前页就等于之前的下一页,下一页就等于之前的下一页加1
+
+    //1.需要显示当前页的房屋介绍
+    // 2.需要判断是否是下拉屏幕获取数据  action == 'renew'是重新加载页面
+    //3.设置属性  house_data_querying 记录加载状态; 正在加载状态为True,表示不可上拉获取更多.
+    // 等没有在加载状态时,赋值为false,表示可以下拉获取新资源
+    //3.新页拼接在前面数据之后
 
      $.get('/api/1.0/houses/search',params,function (response) {
-            if(response.errno == '0'){
 
-                var html = template('house-list-tmpl',{'houses':response.data.house_detail_list})
-                $('.house-list').html(html)
+         house_data_querying = false;
+            if(response.errno == '0'){
+                total_page = response.data.pages;
+
+                var html = template('house-list-tmpl',{'houses':response.data.house_detail_list});
+                if(action == 'renew'){ // 如果是重新加载页面的,就直接获取页面信息
+                    $('.house-list').html(html);
+                }else { // 如果是下拉数据的,就拼接数据
+
+                    cur_page = next_page;
+
+                    $('.house-list').append(html);
+                }
 
             }else {
                 alert(response.errmsg)
@@ -80,25 +99,6 @@ $(document).ready(function(){
     var areaName = queryData["aname"];
     if (!areaName) areaName = "位置区域";
     $(".filter-title-bar>.filter-title").eq(1).children("span").eq(0).html(areaName);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -104,6 +104,10 @@ def change_name():
     json_dict = request.json
     name = json_dict.get('name')
 # 3.校验参数
+    if User.query.filter(User.name == name).first():
+        return jsonify(errno=RET. DATAEXIST , errmsg=u'该名称已被使用')
+
+
     if not all([name]):
         return jsonify(errno=RET. PARAMERR , errmsg=u'数据不完整')
     # user_id = g.user_id
