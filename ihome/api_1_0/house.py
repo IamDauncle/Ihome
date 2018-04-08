@@ -9,8 +9,9 @@ from ihome.utils.response_code import RET
 from ihome import redis_store,db
 from ihome import constants
 from ihome.utils.common import login_required
-from ihome.models import House,Facility,HouseImage
+from ihome.models import House,Facility,HouseImage,Order
 from ihome.utils.image_storage import upload_image
+import datetime
 
 
 
@@ -281,6 +282,113 @@ def get_house_info(house_id):
 
 
 
-# # 定义获取房屋搜索显示接口
-# @api.route('/houses/search')
-# def get_houses_search():
+# 定义获取房屋搜索显示接口
+# [('sk', u'new'), ('ed', u''), ('sd', u''), ('p', u'1'), ('aid', u'')]
+@api.route('/houses/search')
+def get_houses_search():
+    '''
+    该视图是显示房屋搜索结果列表的页面
+    需要根据传入的参数进行多层的条件筛选
+    如果搜索没有他传入搜索条件,则是显示全部房源列表
+
+    将得到的筛选得到的搜索列表结果进行排序判断
+    根据排序要求,就行排序显示
+
+    将排序的结果进行分页展示
+
+    '''
+
+    # 1.获取参数
+    sk = request.args.get('sk')  # 排序方式  new ,booking,price-inc,price-des
+    aid = request.args.get('aid')  # 城区
+    start_date = request.args.get('sd') # 开始时间
+    end_date = request.args.get('ed') # 离开时间
+    p = request.args.get('p') # 分页页码
+
+
+
+    # 2.参数校验
+    try:
+        p = int(p)
+        if start_date:  # 如果有选择开始时间  进行校验
+            start_date = datetime.datetime.strptime(start_date,'%Y-%m-%d')
+        if end_date:   # 如果有选择结束时间  进行校验
+            end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d')
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.PARAMERR  , errmsg=u'数据有误')
+
+
+
+    try:  # 整个都是对数据的获取过程
+    # 3.筛选
+
+        # 创建一个中间变量,来进行筛选结果的存储获取,过度.
+        house_query = House.query
+
+        if aid:  # 城区筛选
+            house_query = house_query.filter(House.area_id == aid)
+
+
+
+        # 获取时间冲突的订单
+        conflict_orders = []
+        if start_date and end_date:  # 时间筛选
+            conflict_orders = Order.query.filter(end_date > Order.begin_date, start_date < Order.end_date).all()
+        elif start_date:
+            conflict_orders = Order.query.filter(start_date < Order.end_date).all()
+        elif end_date:
+            conflict_orders = Order.query.filter(end_date > Order.begin_date).all()
+
+
+        if conflict_orders:
+        # 遍历冲突订单,获取冲突订单的houser_id
+            in_order_houser = [order.house_id for order in conflict_orders]
+
+            # 筛选出时间冲突的展示列表
+            house_query = house_query.filter(House.id.notin_(in_order_houser))
+
+        # 4.经过两步的筛选后,进行排序的判断   new ,booking,price-inc,price-des
+
+        if sk == 'booking':  # 按订单数从多到少排序
+            house_query = house_query.order_by(House.orders.desc())
+        elif sk == 'price-inc':  # 按价格从低到高排序
+            house_query = house_query.order_by(House.price.asc())
+        elif sk == 'price-des':  # 按价格从高到底排序
+            house_query = house_query.order_by(House.price.desc())
+        else:
+            house_query = house_query.order_by(House.create_time.desc())
+
+
+        # 将进行排序的结果进行分页
+
+        paginates = house_query.paginate(p,constants.HOME_PAGE_MAX_HOUSES,False)
+
+        # 获取分页总数
+        pages = paginates.page
+
+        # 获取当前分页数据
+        houses = paginates.items
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR  , errmsg=u'数据操作失败')
+
+    # 获取房屋数据
+    house_detail_list = [house.to_basic_dict() for house in houses]
+
+    # 构造响应数据
+    response_data = {
+        'pages':pages,
+        'house_detail_list':house_detail_list
+    }
+
+    return jsonify(errno=RET. OK , errmsg=u'列表获取成功',data = response_data)
+
+
+
+
+
+
+
+
+

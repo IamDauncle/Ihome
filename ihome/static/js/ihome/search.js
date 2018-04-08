@@ -45,6 +45,29 @@ function updateHouseData(action) {
         p:next_page
     };
     // TODO: 获取房屋列表信息
+
+     $.get('/api/1.0/houses/search',params,function (response) {
+            if(response.errno == '0'){
+
+                var html = template('house-list-tmpl',{'houses':response.data.house_detail_list})
+                $('.house-list').html(html)
+
+            }else {
+                alert(response.errmsg)
+            }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 $(document).ready(function(){
@@ -57,6 +80,28 @@ $(document).ready(function(){
     var areaName = queryData["aname"];
     if (!areaName) areaName = "位置区域";
     $(".filter-title-bar>.filter-title").eq(1).children("span").eq(0).html(areaName);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // 获取筛选条件中的城市区域信息
