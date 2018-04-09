@@ -112,3 +112,62 @@ def set_order():
 
 
     pass
+
+
+
+
+@api.route('/orders')
+@login_required
+def get_order():
+    '''
+    该接口是用于显示订单的.--客户订单,我的订单
+    /api/1.0/orders?role=   client  landlord
+
+    1.判断登陆
+    2.获取参数
+    3.校验参数
+    4.根据用户身份查询订单
+    5.构造响应数据
+    6.返回响应
+    '''
+
+    # 获取参数
+    role = request.args.get('role')
+    # 参数校验
+    if not role:
+        return jsonify(errno=RET. PARAMERR, errmsg=u'数据不能为空')
+    if not role in ['client','landlord']:
+        return jsonify(errno=RET. PARAMERR, errmsg=u'参数有误')
+
+    if role == 'client':   # 租客的订单
+        try:
+            orders = Order.query.order_by(Order.create_time.desc()).filter(Order.user_id == g.user_id).all()
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.DBERR , errmsg=u'订单数据查询错误')
+
+    else:   # 我出租的订单   获取订单中,order的house_id是我的房源的id的订单
+        try:
+            houses = House.query.filter(House.user_id == g.user_id).all()
+            houses_id = [house.id for house in houses]
+            orders = Order.query.order_by(Order.create_time.desc()).filter(Order.house_id.in_(houses_id)).all()
+
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET. DBERR, errmsg=u'订单数据查询失败')
+
+    if not orders:
+        return jsonify(errno=RET. NODATA, errmsg=u'赞无订单')
+
+
+    # 构造响应数据
+
+    orders_dict_list = [order.to_dict() for order in orders]
+
+    return jsonify(errno=RET. OK, errmsg=u'OK',data = orders_dict_list)
+
+
+
+
+
+
