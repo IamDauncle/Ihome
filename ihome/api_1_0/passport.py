@@ -13,6 +13,13 @@ from ihome.utils.common import login_required
 @api.route('/users',methods=['POST'])
 def register():
     # 注册视图
+    '''
+    该接口做用户注册
+    1.图片验证码的生成,显示---使用工具包
+
+
+
+    '''
 
     # 1.获取参数,手机号,密码,用户短信验证码,uuid
     # 2.判断参数完整性
@@ -82,8 +89,6 @@ def register():
         session['user_id'] = user.id
         session['user_mobile'] = user.mobile
         session['user_name'] = user.name
-
-
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DATAERR, errmsg=u'登陆状态保存失败')
@@ -195,7 +200,14 @@ def index_login():
     if not all([user_id,user_name,user_mobile]):
         return jsonify(errno=RET. SESSIONERR , errmsg=u'未登陆')
 
-    return jsonify(errno=RET. OK , errmsg=u'OK',data = {'user_name':user_name})
+    session_data = {
+        'user_id':user_id,
+        'user_name':user_name,
+        'user_mobile':user_mobile
+
+    }
+
+    return jsonify(errno=RET. OK , errmsg=u'OK',data =session_data)
 
 
 

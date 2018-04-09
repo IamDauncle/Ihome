@@ -10,7 +10,7 @@ from ihome.utils.response_code import RET
 import random
 from ihome.utils.SMS import CCP
 
-
+# 图片验证码获取接口
 @api.route('/image_code')
 def get_image_code():
     # 获取图片验证码  get请求

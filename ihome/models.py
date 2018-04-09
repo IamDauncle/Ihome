@@ -38,7 +38,7 @@ class User(BaseModel, db.Model):
     def password(self):  # 表示的是get
         raise AttributeError('can not read')
 
-    @password.setter
+    @password.setter  # 当对password进行属性设置时,会调用装饰的方法
     def password(self, value):
         # value就是需要加密的明文。
         self.password_hash = generate_password_hash(value)

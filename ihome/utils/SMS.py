@@ -49,6 +49,35 @@ class CCP(object):
         return cls._instance
 
 #
+# class Dl():
+#
+#
+#     def __new__(cls, *args, **kwargs):
+#
+#         cls._price = None
+#         if not cls._price:
+#             cls._price = super(Dl, cls).__new__(cls, *args, **kwargs)
+#             # 可以在这给对象进行属性或其他设置
+#             return cls._price
+#
+# class DLl():
+#
+#     def __new__(cls, *args, **kwargs):
+#
+#         if not hasattr(cls,'_price'):
+#             cls._price = super(Dl, cls).__new__(cls, *args, **kwargs)
+#             return cls._price
+#
+
+
+
+
+
+
+
+
+
+#
 # 单例的实现.定义一个类的私有属性赋值为None,该属性用于作为接受返回的事例对象.
 #     class CCP(object)
     # _instance = None
@@ -57,12 +86,6 @@ class CCP(object):
     #         cls._instance = super(CCP, cls).__new__(cls, *args, **kwargs)
     #      或 cls._instance = object.__new__(cls, *args, **kwargs)
     #     return cls._instance
-
-
-
-
-
-
 
     # def __new__(cls, *args, **kwargs):
     #     if not hasattr(cls, '_instance'):

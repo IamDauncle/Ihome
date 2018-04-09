@@ -24,12 +24,14 @@ function generateImageCode() {
     uuid = generateUUID(); // 获取用户的唯一表示uuid
 
     // var url = '/aip/1.0/image_code?uuid=%s&last_uuid=%s' %(uuid,last_uuid);
+
     var url = '/api/1.0/image_code?uuid=' + uuid + '&last_uuid=' + last_uuid;
+
 // 填充img访问路径
     $('.image-code>img').attr('src',url);
 
-    // 将uuid变成过去式
-    last_uuid =uuid
+
+    last_uuid =uuid// 将uuid变成过去式
 
 
 }

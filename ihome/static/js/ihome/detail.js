@@ -30,12 +30,13 @@ $(document).ready(function(){
             if(response.data.login_user_id != response.data.house_data_dict.user_id){
                 //如果登陆id不是本房源用户id,显示预定按钮,填充点击跳转路径
                 $('.book-house').show();
-                $('.book-house').attr('href', 'booking.html?hid=' + response.data.house.hid);
+                $('.book-house').attr('href', 'booking.html?hid=' + response.data.house_data_dict.hid);
+
+
 
             }else {
                 $('.book-house').hide()
             }
-
 
         } else {
             alert(response.errmsg)
