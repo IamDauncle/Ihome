@@ -9,12 +9,11 @@ from ihome import db
 
 
 # 定义提交订单接口
-
 @api.route('/orders',methods = ['POST'])
 @login_required
 def set_order():
     '''
-    该接口是作为提交订单作用
+    该接口是作为提交订单作用   创建订单
     获取house_id,为该house_id的房源创建一个order数据
 
     1判断登陆
@@ -86,32 +85,13 @@ def set_order():
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
+        db.session.rollback()
         return jsonify(errno=RET. DBERR, errmsg=u'保存数据失败')
 
     # 7.返回响应
     return jsonify(errno=RET. OK, errmsg=u'创建订单成功')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    pass
 
 
 
@@ -156,8 +136,8 @@ def get_order():
             current_app.logger.error(e)
             return jsonify(errno=RET. DBERR, errmsg=u'订单数据查询失败')
 
-    if not orders:
-        return jsonify(errno=RET. NODATA, errmsg=u'赞无订单')
+    # if not orders:  # 如果没有订单 下面的遍历就不会遍历,是[].
+    #     return jsonify(errno=RET. NODATA, errmsg=u'赞无订单')
 
 
     # 构造响应数据
@@ -166,6 +146,68 @@ def get_order():
 
     return jsonify(errno=RET. OK, errmsg=u'OK',data = orders_dict_list)
 
+
+
+
+@api.route('/orders/<int:order_id>',methods = ['PUT'])
+@login_required
+def set_order_status(order_id):
+    '''
+    /api/1.0/orders/3?action=accept
+    该接口用于操作接单和拒接----修改order_status
+    /order/order_id?action = ---accept    ---reject
+
+    1判断登陆
+    2.获取参数  --action  --order_Id   --reason
+    3.参数校验   --accept    ---reject
+    4.根据action 进行修改order_status
+    5.如果是reject  需要添加拒接理由到评论字段
+    6.提交数据库
+    7.返回响应
+    '''
+
+    # 获取参数
+    action = request.args.get('action')
+
+    if not action in ['accept','reject']:
+        return jsonify(errno=RET.PARAMERR , errmsg=u'缺少参数')
+
+
+
+    try:
+        order = Order.query.filter(Order.id == order_id,Order.status == 'WAIT_ACCEPT').first()
+        # order = Order.query.filter(Order.id == order_id, Order.status == 'WAIT_ACCEPT',Order.house.user_id ==g.user_id).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR , errmsg=u'订单查询失败')
+    if not order:
+        return jsonify(errno=RET.NODATA , errmsg=u'订单不存在')
+
+    # 判断登陆用户是否为房主
+    login_user_id = g.user_id
+    house_user_id = order.house.user_id
+    if login_user_id != house_user_id:
+        return jsonify(errno=RET.USERERR, errmsg=u'非房主不可接单')
+
+    if action == 'accept':  # 接单
+        # 查询到订单,如果是接单..修改status订单的为待评价
+        order.status = 'WAIT_COMMENT'
+        # 接单后,将房源的销量加1
+        order.house.order_count += 1
+    else:
+        # 获取拒单理由
+        reason = request.json.get('reason')
+        order.status = 'REJECTED'
+        order.comment = reason
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR , errmsg=u'订单状态修改失败')
+
+    return jsonify(errno=RET.OK , errmsg=u'OK')
 
 
 
