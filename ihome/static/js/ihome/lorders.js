@@ -50,7 +50,7 @@ $(document).ready(function(){
                         // 3. 隐藏弹出的框
                         $("#accept-modal").modal("hide");
                    } else if (response.errno == '4101') {
-                       location.href = '/';
+                       location.href = '/login.html';
                    } else {
                        alert(response,errmsg);
                    }
@@ -96,7 +96,7 @@ $(document).ready(function(){
                         // 3. 隐藏弹出的框
                         $("#reject-modal").modal("hide");
                    } else if (response.errno == '4101') {
-                       location.href = '/';
+                       location.href = '/login.html';
                    } else {
                        alert(response,errmsg);
                    }

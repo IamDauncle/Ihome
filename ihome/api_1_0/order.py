@@ -77,7 +77,7 @@ def set_order():
     order.house_price = house.price
     order.amount = house.price * (end_date-start_date).days
     # order.status = 'WAIT_ACCEPT'  #  默认是WAIT_ACCEPT  可以不用写
-    house.order_count += 1  # 需要将房屋的销量添加
+
 
     # 6.提交数据库
     try:
@@ -208,6 +208,57 @@ def set_order_status(order_id):
         return jsonify(errno=RET.DBERR , errmsg=u'订单状态修改失败')
 
     return jsonify(errno=RET.OK , errmsg=u'OK')
+
+
+
+
+
+
+@api.route('/orders/<order_id>/comment',methods = ['POST'])
+@login_required
+def set_comment(order_id):
+    """
+    客户评论接口
+
+
+
+    """
+
+    # 获取参数
+    comment = request.json.get('comment')
+
+    if not comment:
+        return jsonify(errno=RET.PARAMERR , errmsg=u'评论不能为空')
+
+
+    try:
+        order = Order.query.filter(Order.id == order_id,Order.status == 'WAIT_COMMENT',Order.user_id == g.user_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR , errmsg=u'查询数据失败')
+
+    if not order:
+        return jsonify(errno=RET. NODATA, errmsg=u'订单不存在')
+
+
+    order.comment = comment
+    order.status = 'COMPLETE'
+
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET. DBERR, errmsg=u'添加评论失败')
+
+
+    return jsonify(errno=RET. OK, errmsg=u'OK')
+
+
+
+
+
 
 
 
