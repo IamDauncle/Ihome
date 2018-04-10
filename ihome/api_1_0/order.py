@@ -95,7 +95,7 @@ def set_order():
 
 
 
-
+# 显示订单接口
 @api.route('/orders')
 @login_required
 def get_order():
@@ -148,7 +148,7 @@ def get_order():
 
 
 
-
+# 定义接单拒单接口
 @api.route('/orders/<int:order_id>',methods = ['PUT'])
 @login_required
 def set_order_status(order_id):
@@ -191,7 +191,8 @@ def set_order_status(order_id):
 
     if action == 'accept':  # 接单
         # 查询到订单,如果是接单..修改status订单的为待评价
-        order.status = 'WAIT_COMMENT'
+        # order.status = 'WAIT_COMMENT'
+        order.status = 'WAIT_PAYMENT'
         # 接单后,将房源的销量加1
         order.house.order_count += 1
     else:
@@ -213,15 +214,18 @@ def set_order_status(order_id):
 
 
 
-
+# 定义评论接口
 @api.route('/orders/<order_id>/comment',methods = ['POST'])
 @login_required
 def set_comment(order_id):
     """
     客户评论接口
-
-
-
+    1,获取参数
+    2.校验参数
+    3.获取订单对象
+    4.修改数据库
+    5.提交数据库
+    6.返回响应
     """
 
     # 获取参数
@@ -254,11 +258,6 @@ def set_comment(order_id):
 
 
     return jsonify(errno=RET. OK, errmsg=u'OK')
-
-
-
-
-
 
 
 

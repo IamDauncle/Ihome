@@ -72,23 +72,6 @@ class User(BaseModel, db.Model):
 
 
 
-
-
-
-    # @property
-    # def password(self):
-    #     raise AttributeError('can not read')
-    #
-    # @password.setter
-    # def password(self, value):
-    #     # value 是外界传入的密码的明文数据
-    #     self.password_hash = generate_password_hash(value)
-
-
-
-
-
-
 class Area(BaseModel, db.Model):
     """城区"""
 

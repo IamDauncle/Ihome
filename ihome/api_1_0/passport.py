@@ -171,18 +171,6 @@ def logout():
         return jsonify(errno=RET. UNKOWNERR , errmsg=u'退出登陆失败')
     return jsonify(errno=RET.OK  , errmsg=u'退出登陆')
 
-#
-# @api.route('/sessions', methods=['DELETE'])
-# @login_required
-# def logout():
-#     """提供退出登录"""
-#
-#     # 1.清理session数据
-#     session.pop('user_id')
-#     # session.pop('name')
-#     session.pop('mobile')
-#
-#     return jsonify(errno=RET.OK, errmsg='退出登录成功')
 
 
 

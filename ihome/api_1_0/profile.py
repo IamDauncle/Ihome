@@ -7,7 +7,7 @@ from ihome.api_1_0 import api
 from ihome.utils.common import login_required
 from flask import request,g,current_app,jsonify,session
 from ihome.utils.image_storage import upload_image
-from ihome.models import User
+from ihome.models import User,House
 from ihome import constants
 
 
@@ -210,3 +210,47 @@ def show_user_auth():
     context = user.arth_to_dict()
 # 6.返回响应
     return jsonify(errno=RET.OK  , errmsg=u'实名认证信息获取成功',data = {'user_arth':context})
+
+
+
+
+
+
+
+
+
+
+
+
+# 定义房源发布和查看接口
+@api.route('/users/houses/')
+@login_required
+def get_my_houses():
+    '''
+    该接口用于显示我发布的房源和进行房源发布
+    1.判断登陆
+    2.获取user_id
+    3.查询我发布的房源
+    4.构造响应信息
+    5.返回响应
+    '''
+
+    # 获取user_id
+
+    user_id = g.user_id
+    try:
+        houses = House.query.filter(House.user_id == user_id).all()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.PARAMERR , errmsg=u'查询房屋信息失败')
+    if not houses:
+        return jsonify(errno=RET. OK, errmsg=u'没有房源发布',data = [])
+
+    house_dict_list = [house.to_basic_dict() for house in houses]
+
+    return jsonify(errno=RET. OK, errmsg=u'房屋信息查询成功',data = house_dict_list)
+
+
+
+
+
